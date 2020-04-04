@@ -58,6 +58,7 @@
     background: #3e3e3e;
     width: 190px !important;
     min-height: 240px;
+    max-height: 300px;
     border-radius: 5px;
     margin: 5px;
     padding: 15px;
@@ -114,6 +115,19 @@
     border-radius: 5px;
     transition: 0.5s background;
 }
+
+.notification {
+    min-width: 250px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+    position: fixed;
+    z-index: 100;
+    left: 15px;
+    top: 15px;
+    transition: 0.5s opacity;
+}
+
 
 @media(max-width: 1300px) {
     .card_playing .alternatives {

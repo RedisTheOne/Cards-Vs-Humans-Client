@@ -15,7 +15,9 @@ export default class Game extends React.Component {
             unconfirmedPick: '',
             confirmedPick: '',
             hasPicked: false,
-            alternativeSocketId: ''
+            alternativeSocketId: '',
+            notificationOpacity: 0,
+            notificationBody: ''
         }
     }
 
@@ -70,9 +72,20 @@ export default class Game extends React.Component {
         });
 
         //New Round
-        this.props.socket.on('new-round', (room) => {
+        this.props.socket.on('new-round', (room, winner) => {
             this.setState({room: room, confirmedPick: '', hasPicked: false, alternativeSocketId: '', everybodyHasPicked: false, unconfirmedPick: ''});
-        })
+            if(winner !== '') {
+                this.show_notification(winner);
+            }
+            document.querySelectorAll('.alternative').forEach(u => {
+                u.style.backgroundColor = 'white';
+                u.style.color = '#3e3e3e';
+            });
+            document.querySelectorAll('.white_card').forEach(c => {
+                c.style.background  = "white";
+                c.style.color = "#3e3e3e";
+            });
+        });
     }
 
     copy_code = () => {
@@ -133,6 +146,21 @@ export default class Game extends React.Component {
         } 
     }
 
+    show_notification = (winner) => {
+        this.setState({notificationOpacity: 1, notificationBody: `${winner} won the last round! The czar now is ${this.state.room.users[this.state.room.czar].nickname}.`});
+        this.hide_notification();
+    }
+
+    hide_notification = () => {
+        setTimeout(() => this.setState({notificationOpacity: 0}), 2500);
+        setTimeout(() => this.setState({notificationBody: ''}), 3000);
+    }
+
+    hide_notification_on_click = () => {
+        this.setState({notificationOpacity: 0});
+        setTimeout(() => this.setState({notificationBody: ''}), 500);
+    }
+
     render() {
         const users = this.state.room.users.map((u, i) => (
             <li key={i} style={{background: this.state.nickname === u.nickname ? 'black' : '#3e3e3e'}}><label className="left unselectable">{u.nickname}{u.admin ? '(admin)' : ''}: {u.score}</label><label className="right unselectable">{this.state.room.czar === i ? 'Czar' : 'Player'}</label></li>
@@ -155,12 +183,16 @@ export default class Game extends React.Component {
 
         return (
             <div className="game">
+                <div className="notification" style={{opacity: this.state.notificationOpacity}}>
+                    <i onClick={() => this.hide_notification_on_click()} className="fas fa-times" style={{color: '#3e3e3e', fontSize: 20, float: "right", cursor: 'pointer'}}></i>
+                    <h3>{this.state.notificationBody}</h3>
+                </div>
                 <div className="header">
                     <i onClick={() => window.location.href = '/'} className="fas fa-home" style={{color: "white", fontSize: 30, padding: 15, cursor: 'pointer'}}></i>
                 </div>
                 <div className="body">
                     <div style={{width: "100vw", height: 300, background: 'black', color: 'white', display: 'flex', flexDirection: "column", justifyContent: 'center', textAlign: 'center', paddingTop: 60}}>
-                        <h1 className="unselectable">Code: {this.state.gameCode}</h1>   
+                        <h1 className="unselectable">Share the code!</h1>   
                         <input type="text" value={this.state.gameCode} style={{opacity: 0, height: 0}} id="span_code" />
                         <button className="submit_btn" onClick={() => this.copy_code()} id="copy_btn">Copy Code</button>
                     </div>

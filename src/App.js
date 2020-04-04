@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Home from './components/Home';
 import Game from './components/Game';
 import openSocket from 'socket.io-client';
-const socket = openSocket('http://localhost:5000');
+const socket = openSocket('https://cvhserver.herokuapp.com/');
 
 function App() {
   return (
